@@ -1,4 +1,4 @@
-import config from "./conf.js";
+import config from "./core/conf.js"
 import express from "express";
 import mongoose, { ConnectOptions } from "mongoose";
 
@@ -9,17 +9,13 @@ const mongooseConnection = mongoose.connect(config.DB, {
 } as ConnectOptions);
 
 mongooseConnection
-  .then(() => console.log("Todo OK ✓"))
+  .then(() => console.log("Mongoose connection ✔"))
   .catch((err) => {
-    console.log("No funciona", err);
+    console.log("Not working ✘", err);
   });
-
-app.get("/", (req, res) => {
-  res.json({ message: "Todo funciona" });
-});
 
 app.use(express.json());
 
 app.listen(config.PORT, () =>
-  console.log(`Servidor levantado en ${config.PORT} ✓`)
+  console.log(`Server up on port: ${config.PORT} ✔`)
 );
