@@ -10,6 +10,13 @@ const getDateInAMonth = () => {
 
 export const createAppointment = async (data) => {
     data.date = getDateInAMonth();
-    const user = new Appointment(data);
-    return await user.save();
+    const appointment = new Appointment(data);
+    return await appointment.save();
 };
+
+export const deleteAppointment = async (id) => {
+    const appointment = await Appointment.findOne({ _id: id });
+    if (appointment) {
+      return await Appointment.deleteOne({ _id: id });
+    }
+  };
