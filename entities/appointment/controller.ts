@@ -19,4 +19,12 @@ export const deleteAppointment = async (id) => {
     if (appointment) {
       return await Appointment.deleteOne({ _id: id });
     }
+};
+
+export const modifyAppointment = async (req) => {
+    const appointment = await Appointment.findOne({ _id: req.params.id });
+    if (!appointment) throw new Error ("NOT_FOUND");
+    req.body.date = Date.now
+    await Appointment.replaceOne({ _id: req.params.id }, req.body);
+    return await appointment.save();
   };

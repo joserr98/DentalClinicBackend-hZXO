@@ -1,5 +1,5 @@
 import express from 'express'
-import {createAppointment, deleteAppointment} from './controller.js'
+import {createAppointment, modifyAppointment, deleteAppointment} from './controller.js'
 
 
 const router = express.Router();
@@ -20,4 +20,13 @@ router.delete("/:id", async(req, res, next) => {
     } 
 });
 
+router.put("/:id", async(req, res, next) => {
+    try {
+        res.json(await modifyAppointment(req))
+    } catch(e) {
+        next(e)
+    } 
+})
+
 export default router
+
