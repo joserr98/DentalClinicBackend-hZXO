@@ -1,6 +1,7 @@
 import config from "./core/conf.js"
 import express from "express";
 import mongoose, { ConnectOptions } from "mongoose";
+import appointmentRouters from './entities/appointment/router.js'
 
 const app = express();
 const mongooseConnection = mongoose.connect(config.DB, {
@@ -15,6 +16,7 @@ mongooseConnection
   });
 
 app.use(express.json());
+app.use("/appointment", appointmentRouters);
 
 app.listen(config.PORT, () =>
   console.log(`Server up on port: ${config.PORT} ✔`)
