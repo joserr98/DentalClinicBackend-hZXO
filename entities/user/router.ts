@@ -1,11 +1,20 @@
 import  express from 'express'
 import {  createUser, login, userList } from './controller.js'
+import { auth } from '../../core/middleware.js'
 
 const router= express.Router()
 
-router.get('/' ,userList)
+router.get('/' ,auth,async(req,res)=>{
+    try{
+        res.json(await userList(req))
+    }
+    catch(e){
 
-router.post('/',async(req,res)=>{
+    }
+
+})
+
+router.post('/', async(req,res)=>{
     try{
         res.json(await createUser(req.body))
     }
