@@ -4,7 +4,6 @@ import  config  from '../../core/conf.js'
 import jwt from 'jsonwebtoken'
 
 export const userList=async(req)=>{
-    
     if(req.token.role=='client'){
     return User.find({_id:req.token.id})}
     else{
@@ -12,16 +11,15 @@ export const userList=async(req)=>{
     }
 }
 
-export const createUser= async(data)=>{
+export const createUser = async(data)=>{
     if(!data.password || data.password.lenght < 5) throw new Error('Invalid Password')
     data.password = await bcrypt.hash(data.password, config.SALT_ROUND)
-    data.role= 'client'||'dentist'
+    data.role = 'client'||'dentist'
     return User.create(data)
-
 }
 
-export const login= async(data)=>{
-    const user=await User.findOne({email:data.email});
+export const login = async(data)=>{
+    const user = await User.findOne({email:data.email});
     if(!user) return null;
     if(!(await bcrypt.compare(data.password,user.password))) return null;
     const token= jwt.sign({id: user._id, role: user.role}, config.SECRET, {expiresIn: '24h'})
