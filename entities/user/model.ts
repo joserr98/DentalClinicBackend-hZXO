@@ -18,7 +18,7 @@ const User= mongoose.model('User', new mongoose.Schema({
     password:{
         type:String,
         required:true,
-        select:false,
+        
     },
     role:{
         type:String,
@@ -31,6 +31,6 @@ const User= mongoose.model('User', new mongoose.Schema({
         required: true
 
     }
-}))
+},{versionKey:false}))
 
 export default User
