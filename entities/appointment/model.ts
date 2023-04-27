@@ -4,6 +4,10 @@ const Appointment = mongoose.model(
   "Appointment",
   new mongoose.Schema(
     {
+      type: {
+        type: String,
+        required: true
+      },
       client: {
         type: String,
         required: true,
@@ -12,18 +16,23 @@ const Appointment = mongoose.model(
         type: String,
         required: true,
       },
-      created_at: {
-        type: Date,
-        default: Date.now
-      },
-      date: {
+      start_date: {
         type: Date,
         required: true,
-        unique: true
       },
-      type: {
-        type: String,
-        required: true
+      end_date: {
+        type: Date,
+        required: true,
+      },
+      create_date: {
+        type: Date,
+        required: true,
+        default: Date.now
+      },
+      modified_date: {
+        type: Date,
+        required: true,
+        default: Date.now
       }
     },
     { versionKey: false }
