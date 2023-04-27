@@ -2,26 +2,12 @@ import Appointment from "./model.js";
 import config from "../../core/conf.js";
 
 export const createAppointment = async (data) => {
-  const appointments = await Appointment.find({
-    $or: [
-      { $and: [{ start_date: { $lte: data.start_date } }, { end_date: { $gte: data.start_date } }] },
-      { $and: [{ start_date: { $lte: data.end_date } }, { end_date: { $gte: data.end_date } }] },
-      { $and: [{ start_date: { $gte: data.start_date } }, { end_date: { $lte: data.end_date } }] }
-    ]
-    // $or: [
-    //   { $and: [{ start_date: { $lte: data.start_date }}, { end_date: { $gte: data.start_date }}]},
-    //   { $and: [{
-    //     start_date: { $lte: data.end_date },
-    //     end_date: { $gte: data.end_date }
-    //   },
-    //   { $and: [{
-    //     start_date: { $gte: data.start_date },
-    //     end_date: { $lte: data.end_date }
-    //   }
-    // ]
-  })
-  console.log(appointments)
-  if (!appointments) throw new Error ("UNAVAILABLE_DATE")
+  const appointments = await Appointment.findOne                     
+    ({$and: [{$or: [{dentist: data.dentist}, {client: data.client}]},
+      {$or: [{ $and: [{ start_date: { $gte: data.start_date }}, {start_date: { $lte: data.end_date } }] },
+             { $and: [{ start_date: { $lt: data.start_date }}, {end_date: { $gt: data.end_date } }] },
+             { $and: [{ end_date: { $gte: data.start_date } }, { end_date: { $lte: data.end_date}}]}]}]})
+  if (appointments) throw new Error ("UNAVAILABLE_DATE")
   const appointment = new Appointment(data);
   return await appointment.save();
 
