@@ -24,14 +24,12 @@ const Appointment = mongoose.model(
         type: Date,
         required: true,
       },
-      create_date: {
+      created_at: {
         type: Date,
-        required: true,
         default: Date.now
       },
-      modified_date: {
+      edited_at: {
         type: Date,
-        required: true,
         default: Date.now
       }
     },
