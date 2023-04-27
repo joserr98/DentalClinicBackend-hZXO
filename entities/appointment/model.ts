@@ -9,11 +9,11 @@ const Appointment = mongoose.model(
         required: true
       },
       client: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: true,
       },
       dentist: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: true,
       },
       start_date: {
@@ -26,11 +26,12 @@ const Appointment = mongoose.model(
       },
       created_at: {
         type: Date,
-        default: Date.now
       },
-      edited_at: {
+      updated_at: {
         type: Date,
-        default: Date.now
+      },
+      deleted_at: {
+        type: Date,
       }
     },
     { versionKey: false }

@@ -1,26 +1,34 @@
 import express from 'express'
-import {createAppointment, modifyAppointment, deleteAppointment} from './controller.js'
-
+import {createAppointment, modifyAppointment, deleteAppointment, listAppointment} from './controller.js'
+import { auth } from '../../core/middleware.js'
 
 const router = express.Router();
 
-router.post("/", async(req, res, next) => {
+router.get('/', auth, async (req, res, next)=> {
     try {
-        res.json(await createAppointment(req.body))
+        res.json(await listAppointment(req))
     } catch(e) {
         next(e)
     } 
 });
 
-router.delete("/:id", async(req, res, next) => {
+router.post("/", auth, async(req, res, next) => {
     try {
-        res.json(await deleteAppointment(req.params.id))
+        res.json(await createAppointment(req))
     } catch(e) {
         next(e)
     } 
 });
 
-router.put("/:id", async(req, res, next) => {
+router.delete("/:id", auth, async(req, res, next) => {
+    try {
+        res.json(await deleteAppointment(req))
+    } catch(e) {
+        next(e)
+    } 
+});
+
+router.put("/:id", auth, async(req, res, next) => {
     try {
         res.json(await modifyAppointment(req))
     } catch(e) {
