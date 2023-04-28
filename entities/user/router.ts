@@ -1,5 +1,5 @@
 import  express from 'express'
-import {  createUser, login, userList } from './controller.js'
+import {  createUser, login, updateUser, userList } from './controller.js'
 import { auth } from '../../core/middleware.js'
 
 const router= express.Router()
@@ -27,5 +27,17 @@ router.post('/log',async(req,res)=>{
     }
     catch(e){'Problem logging user'}
 })
+
+router.put('/:id',auth,async(req,res)=>{
+    try{
+        res.json(await updateUser(req))
+    }
+    catch(e){}
+})
+
+
+
+
+
 
 export default router
