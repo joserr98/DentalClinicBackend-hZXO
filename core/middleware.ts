@@ -14,3 +14,16 @@ export const auth = (req, res: Response, next: NextFunction)=>{
     }
     
 }
+
+export const handlerError = (err, req, res, next)=>{
+    if(err.message === 'AUTH_REQUIRED') return res.status(403).json({error: 'AUTH_REQUIRED'})
+    if(err.message === 'TOKEN_INVALID') return res.status(403).json({error: 'AUTH_REQUIRED'})
+    if(err.message === 'NOT_FOUND') return res.status(404).json({error: 'NOT_FOUND'})
+    if(err.message === 'PASSWORD_TOO_SHORT') return res.status(422).json({error: 'NOT_FOUND'})
+    if(err.message === 'NO_APPOINTMENT') return res.status(422).json({error: 'NOT_FOUND'})
+    if(err.message === 'UNAVAILABLE_DATE') return res.status(422).json({error: 'NOT_FOUND'})
+
+    // If there is a non defined error sets status 500.
+    console.error(err);
+    return res.status(500).json({error: 'SERVER_ERROR', err})
+}

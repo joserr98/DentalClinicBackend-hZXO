@@ -29,7 +29,7 @@ export const listAppointment = async (data) => {
 export const detailedAppointment = async (data) => {
   
   const appointment = await Appointment.findOne({ _id: data.params.id});
-  if(!appointment) throw new Error('NO_APPOINTMENT_FOUND')
+  if(!appointment) throw new Error('NO_APPOINTMENT')
   if(data.token.role == 'dentist'){
     return {appointment}
   } else
@@ -40,48 +40,40 @@ export const detailedAppointment = async (data) => {
 };
 
 export const createAppointment = async (data) => {
-  const appointments = await Appointment.findOne({
+  const { body, token } = data;
+  const { dentist, client, start_date, end_date } = body;
+  const appointmentExists = await Appointment.findOne({
+    $or: [
+      { dentist },
+      { client },
+    ],
     $and: [
-      { $or: [{ dentist: data.body.dentist }, { client: data.body.client }] },
       {
         $or: [
-          {
-            $and: [
-              { start_date: { $gte: data.body.start_date } },
-              { start_date: { $lt: data.body.end_date } },
-            ],
-          },
-          {
-            $and: [
-              { start_date: { $lte: data.body.start_date } },
-              { end_date: { $gte: data.body.end_date } },
-            ],
-          },
-          {
-            $and: [
-              { end_date: { $gt: data.body.start_date } },
-              { end_date: { $lt: data.body.end_date } },
-            ],
-          },
-        ],
-      },
-    ],
+          { start_date: { $gte: start_date, $lt: end_date } },
+          { end_date: { $gt: start_date, $lte: end_date } },
+          { $and: [ { start_date: { $lte: start_date } }, { end_date: { $gte: end_date } } ] }
+        ]
+      }
+    ]
   });
-  if (appointments) throw new Error("UNAVAILABLE_DATE");
-  if (data.token.role === "client") {
-    data.body.client = data.token.id;
+  if (appointmentExists) {
+    throw new Error("UNAVAILABLE_DATE");
   }
-  if (data.token.role === "dentist") {
-    data.body.dentist = data.token.id;
+  if (token.role === "client") {
+    body.client = token.id;
   }
-  data.body.created_at = new Date();
-  const appointment = new Appointment(data.body);
+  if (token.role === "dentist") {
+    body.dentist = token.id;
+  }
+  body.created_at = new Date();
+  const appointment = new Appointment(body);
   return await appointment.save();
 };
 
 export const deleteAppointment = async (req) => {
   const appointment = await Appointment.findOne({ _id: req.params.id });
-  if (!appointment) throw new Error("NOT_FOUND");
+  if (!appointment) throw new Error("NO_APPOINTMENT");
   req.body.deleted_at = new Date();
   req.body.client = req.token.id;
   await Appointment.replaceOne({ _id: req.params.id }, req.body);
@@ -90,7 +82,7 @@ export const deleteAppointment = async (req) => {
 
 export const modifyAppointment = async (req) => {
   const appointment = await Appointment.findOne({ _id: req.params.id });
-  if (!appointment) throw new Error("NOT_FOUND");
+  if (!appointment) throw new Error("NO_APPOINTMENT");
   req.body.updated_at = new Date();
   req.body.client = req.token.id;
   await Appointment.replaceOne({ _id: req.params.id }, req.body);
