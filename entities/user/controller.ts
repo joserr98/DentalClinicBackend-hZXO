@@ -13,13 +13,10 @@ export const userList=async(req)=>{
 }
 export const updateUser=async(data)=>{
     if(data.token.role=='client'){
-
       const user= await User.findOne({_id:data.params.id})
        await User.updateOne({_id:data.params.id},data.body)
        if(!user) throw new Error('ajnfdk')
        return await user.save()
-
-       
     }
 
 }
