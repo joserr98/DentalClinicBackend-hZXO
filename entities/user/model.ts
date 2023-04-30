@@ -28,9 +28,14 @@ const User= mongoose.model('User', new mongoose.Schema({
     },
     phone_number:{
         type:Number,
-        required: true
+        required: true,
+        unique:true
 
-    }
+    },
+    created_at:Date,
+    updated_at:Date,
+    deleted_at:Date
+
 },{versionKey:false}))
 
 export default User
