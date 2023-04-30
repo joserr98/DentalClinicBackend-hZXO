@@ -1,5 +1,5 @@
 import express from 'express'
-import {createAppointment, modifyAppointment, deleteAppointment, listAppointment} from './controller.js'
+import {createAppointment, modifyAppointment, deleteAppointment, listAppointment, detailedAppointment} from './controller.js'
 import { auth } from '../../core/middleware.js'
 
 const router = express.Router();
@@ -7,6 +7,14 @@ const router = express.Router();
 router.get('/', auth, async (req, res, next)=> {
     try {
         res.json(await listAppointment(req))
+    } catch(e) {
+        next(e)
+    } 
+});
+
+router.get('/:id', auth, async (req, res, next)=> {
+    try {
+        res.json(await detailedAppointment(req))
     } catch(e) {
         next(e)
     } 
