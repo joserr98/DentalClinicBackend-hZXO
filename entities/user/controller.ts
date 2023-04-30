@@ -19,19 +19,19 @@ export const updateUser = async (data) => {
     if (data.token.role === 'client' && data.params.id === data.token.id) {
       const user = await User.findOne({ _id: data.params.id });
       data.body.updated_at = new Date();
-      await User.updateOne({ _id: data.params.id }, data.body);
+      const updateUser= await User.findOneAndUpdate({ _id: data.params.id },{$set:data.body},{ returnDocument: 'after' });
       if (!user) {
         throw new Error('User not found, impossible to update');
       }
-      return await user.save();
+      return updateUser;
     } else if (data.token.role === 'dentist') {
       const user = await User.findById(data.params.id);
       if (!user) {
         throw new Error('User not found, impossible to update');
       }
       data.body.updated_at = new Date();
-      await User.updateOne({ _id: data.params.id }, data.body);
-      return user;
+       const updatedUser=await User.findOneAndUpdate({ _id: data.params.id },{$set:data.body},{ returnDocument: 'after' });
+      return updatedUser 
     } else {
       throw new Error('Invalid user role');
     }
@@ -54,5 +54,31 @@ export const login= async(data)=>{
     return{token}
 }
 
+export const deleteUser= async (data) => {
+    console.log('hola')
+    if(data.token.role=='client' && data.params.id === data.token.id){
+    const deleteClient = await User.findOne({ _id: data.params.id });
+    if (!deleteClient) throw new Error("User not found");
+    data.body.deleted_at = new Date();
+    await User.findOneAndReplace({ _id: data.params.id },{$set:data.body},{ returnDocument: 'after' });
+    return await deleteClient.save()
+    }
+};
 
+    // else if(data.token.role=='dentist'){
+    //  const user= await User.findById(data.params.id)
+    //  if(!user){
+    //     throw new Error("User not Found")
+    //  }
+    //  data.body.deleted_at = new Date();
+    //  const deleteUser= await User.findOneAndReplace({ _id: data.params.id },{$set:data.body},{ returnDocument: 'after' });
+    //  return deleteUser
+    // }
+    // else{throw new Error('Invalid user role');}
+
+
+ 
+
+
+  
 
