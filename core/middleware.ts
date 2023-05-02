@@ -25,6 +25,11 @@ export const handlerError = (err, req, res, next)=>{
     if(err.message === 'NO_APPOINTMENT') return res.status(422).json({error: 'NOT_FOUND'})
     if(err.message === 'UNAVAILABLE_DATE') return res.status(422).json({error: 'NOT_FOUND'})
     if(err.message === 'WRONG_DATE') return res.status(422).json({error: 'WRONG_DATE'})
+    if(err.message === 'SERVICE_NOT_ALLOW') return res.status(402).json({error:'USER NOT FOUND'})
+    if(err.message=== 'INVALID_PASSWORD') return res.status(402).res.json({error:'NOT FOUND'})
+    if(err.message=== 'USER_NOT_FOUND') return res.status(402).res.json({error:'NOT FOUND'})
+    if(err.message==='USER_NOT_FOUND') return res.status(402).res.json({error:'NOT FOUND'})
+    if(err.message==='INVALID_USER_ROLE') return res.status(402).res.json({error:'CAN NOT MODIFY USER'})
 
     // If there is a non defined error sets status 500.
     console.error(err);
