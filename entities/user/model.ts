@@ -5,7 +5,7 @@ const User= mongoose.model('User', new mongoose.Schema({
         type:String,
         required:true
     },
-    surname:{
+    lastname:{
         type:String,
         required:true
     },
