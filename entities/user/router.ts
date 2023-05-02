@@ -1,5 +1,5 @@
 import  express from 'express'
-import {  createUser, login, updateUser, userList } from './controller.js'
+import {  createUser, deleteUser, login, updateUser, userList } from './controller.js'
 import { auth } from '../../core/middleware.js'
 
 const router= express.Router()
@@ -35,18 +35,16 @@ router.put('/:id',auth,async(req,res)=>{
     catch(e){return res.status(404).json('Problem updating user')}
 })
 
-// router.delete('/:id',auth,async(req,res)=>{
-//     try{
-//         res.json(await deleteUser(req))
-//     }
-//     catch(e){
-//         return res.status(404).json('can not delete user')
-//     }
+router.delete('/:id',auth,async(req,res)=>{
+    try{
+        console.log(1)
+        res.json(await deleteUser(req))
+    }
+    catch(e){
+        return res.status(404).json('Error can not delete user')
+    }
 
-// })
-
-
-
+})
 
 
 export default router
