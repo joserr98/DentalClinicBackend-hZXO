@@ -1,5 +1,4 @@
 import Appointment from "./model.js";
-import config from "../../core/conf.js";
 
 export const listAppointment = async (data) => {
   const appointmentTypeRegex = new RegExp(data.query.type, "i");
@@ -26,16 +25,11 @@ export const listAppointment = async (data) => {
 };
 
 export const detailedAppointment = async (data) => {
-  
   const appointment = await Appointment.findOne({ _id: data.params.id});
   if(!appointment) throw new Error('NO_APPOINTMENT')
-  if(data.token.role == 'dentist'){
-    return {appointment}
-  } else
-  if(data.token.role == 'client' && data.token.id == appointment.client){
+  if(data.token.role == 'dentist' || data.token.role == 'client' && data.token.id == appointment.client){
     return {appointment}
   }
-
 };
 
 export const createAppointment = async (data) => {
@@ -81,10 +75,8 @@ export const deleteAppointment = async (req) => {
   req.body.client = req.token.id;
   await Appointment.findOneAndUpdate(
     { _id: req.params.id, client: req.token.id },
-    { $set: { deleted_at: new Date() } },
-    { new: true }
+    { $set: { deleted_at: new Date() } }
   );
-  return await appointment.save();
 };
 
 export const modifyAppointment = async (data) => {
@@ -118,15 +110,14 @@ export const modifyAppointment = async (data) => {
   if (appointmentExists) {
     throw new Error('UNAVAILABLE_DATE');
   }
-
+  
   body.updated_at = new Date();
   body.client = token.id;
-
   const updatedAppointment = await Appointment.findOneAndUpdate(
     { _id: params.id, client: token.id },
     { $set: body },
     { new: true }
   );
-
+    
   return updatedAppointment;
 };
