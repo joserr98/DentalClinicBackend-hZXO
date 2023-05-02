@@ -2,7 +2,6 @@ import Appointment from "./model.js";
 import config from "../../core/conf.js";
 
 export const listAppointment = async (data) => {
-  const query = Object.keys(data.query);
   const appointmentTypeRegex = new RegExp(data.query.type, "i");
   const startDate = new Date(data.query.start_date);
   const endDate = new Date(data.query.end_date);
@@ -42,6 +41,9 @@ export const detailedAppointment = async (data) => {
 export const createAppointment = async (data) => {
   const { body, token } = data;
   const { dentist, client, start_date, end_date } = body;
+  if (start_date > end_date){
+    throw new Error ('WRONG_DATE')
+  }
   const appointmentExists = await Appointment.findOne({
     $or: [
       { dentist },
@@ -54,8 +56,9 @@ export const createAppointment = async (data) => {
           { end_date: { $gt: start_date, $lte: end_date } },
           { $and: [ { start_date: { $lte: start_date } }, { end_date: { $gte: end_date } } ] }
         ]
-      }
-    ]
+      },
+      { deleted_at:  null  },
+    ],
   });
   if (appointmentExists) {
     throw new Error("UNAVAILABLE_DATE");
@@ -76,15 +79,54 @@ export const deleteAppointment = async (req) => {
   if (!appointment) throw new Error("NO_APPOINTMENT");
   req.body.deleted_at = new Date();
   req.body.client = req.token.id;
-  await Appointment.replaceOne({ _id: req.params.id }, req.body);
+  await Appointment.findOneAndUpdate(
+    { _id: req.params.id, client: req.token.id },
+    { $set: { deleted_at: new Date() } },
+    { new: true }
+  );
   return await appointment.save();
 };
 
-export const modifyAppointment = async (req) => {
-  const appointment = await Appointment.findOne({ _id: req.params.id });
-  if (!appointment) throw new Error("NO_APPOINTMENT");
-  req.body.updated_at = new Date();
-  req.body.client = req.token.id;
-  await Appointment.replaceOne({ _id: req.params.id }, req.body);
-  return await appointment.save();
+export const modifyAppointment = async (data) => {
+  const { body, params, token } = data;
+  if (body.start_date > body.end_date){
+    throw new Error ('WRONG_DATE')
+  }
+  const appointment = await Appointment.findOne({ _id: params.id });
+  if (!appointment) {
+    throw new Error('NO_APPOINTMENT');
+  }
+
+  const appointmentExists = await Appointment.findOne({
+    $or: [
+      { dentist: appointment.dentist },
+      { client: appointment.client },
+    ],
+    $and: [
+      {
+        $or: [
+          { start_date: { $gte: body.start_date, $lt: body.end_date } },
+          { end_date: { $gt: body.start_date, $lte: body.end_date } },
+          { $and: [ { start_date: { $lte: body.start_date } }, { end_date: { $gte: body.end_date } } ] }
+        ]
+      },
+      { _id: { $ne: appointment._id } },
+      { deleted_at: null }
+    ],
+  });
+
+  if (appointmentExists) {
+    throw new Error('UNAVAILABLE_DATE');
+  }
+
+  body.updated_at = new Date();
+  body.client = token.id;
+
+  const updatedAppointment = await Appointment.findOneAndUpdate(
+    { _id: params.id, client: token.id },
+    { $set: body },
+    { new: true }
+  );
+
+  return updatedAppointment;
 };

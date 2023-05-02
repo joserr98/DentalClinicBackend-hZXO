@@ -10,6 +10,7 @@ export const auth = (req, res: Response, next: NextFunction)=>{
         req.token= jwt.verify(token, confs.SECRET)
         next();
     } catch(e){
+
         return next(new Error('TOKEN_INVALID'));
     }
     
@@ -22,6 +23,7 @@ export const handlerError = (err, req, res, next)=>{
     if(err.message === 'PASSWORD_TOO_SHORT') return res.status(422).json({error: 'NOT_FOUND'})
     if(err.message === 'NO_APPOINTMENT') return res.status(422).json({error: 'NOT_FOUND'})
     if(err.message === 'UNAVAILABLE_DATE') return res.status(422).json({error: 'NOT_FOUND'})
+    if(err.message === 'WRONG_DATE') return res.status(422).json({error: 'WRONG_DATE'})
 
     // If there is a non defined error sets status 500.
     console.error(err);
