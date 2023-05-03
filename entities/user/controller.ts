@@ -77,7 +77,7 @@ export const createUser = async (data) => {
 export const login = async (data) => {
   const user = await User.findOne({ email: data.email, deleted_at: null });
   if (!user) throw new Error("USER_NOT_FOUND");
-  if (!(await bcrypt.compare(data.password, user.password))) return null;
+  if (!(await bcrypt.compare(data.password, user.password))) throw new Error("USER_NOT_FOUND");;
   const token = jwt.sign({ id: user._id, role: user.role }, config.SECRET, {
     expiresIn: "24h",
   });
