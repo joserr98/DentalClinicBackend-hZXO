@@ -68,7 +68,7 @@ export const updateUser = async (data) => {
 
 export const createUser = async (data) => {
   if (!data.password || data.password.lenght < 5)
-    throw new Error("Invalid Password");
+    throw new Error("INVALID_PASSWORD");
   data.password = await bcrypt.hash(data.password, config.SALT_ROUND);
   data.created_at = new Date();
   return User.create(data);
