@@ -29,7 +29,7 @@ export const handlerError = (err, req, res, next)=>{
     if(err.message === 'SERVICE_NOT_ALLOW') return res.status(402).json({error:'NOT_FOUND'})
     if(err.message === 'INVALID_PASSWORD') return res.status(402).json({error:'NOT_FOUND'})
     if(err.message === 'USER_NOT_FOUND') return res.status(402).json({error:'NOT_FOUND'})
-    if(err.message === 'INVALID_USER_ROLE') return res.status(402).json({error:'CAN NOT MODIFY USER'})
+    if(err.message === 'INVALID_USER_ROLE') return res.status(402).json({error:'CAN_NOT_MODIFY_USER'})
 
     // If there is a non defined error sets status 500.
     console.error(err);

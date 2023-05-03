@@ -3,20 +3,15 @@ import bcrypt from "bcrypt";
 import config from "../../core/conf.js";
 import jwt from "jsonwebtoken";
 
-export const userList = async (req) => {
-  const query = Object.keys(req.query)
-  const regExpLastname = new RegExp(req.query.lastname, "i");
-  const regExpName = new RegExp(req.query.name, "i");
-  const filter = {
-    deleted_at: null,
-    ...(req.query.name && { name: regExpName }),
-    ...(req.query.lastname && { lastname: regExpLastname }),
-    ...(req.token.role === "client" && { _id: req.token.id }),
-    ...(req.token.role === "dentist" && {}),
-  };
-  const proyection = { name: 1, lastname: 1, phone_number: 1, email: 1 }
-  return await User.find(filter,proyection);
-} 
+export const userList=async(req)=>{
+  const regExpLastname= new RegExp(req.query.lastname,'i')
+  const regExpName= new RegExp(req.query.name,'i')
+  if(req.token.role=='client'){
+  return User.find({_id:req.token.id,},{name:1,lastname:1,phone_number:1,email:1})}
+  else if(req.token.role=='dentist'){
+      return User.find({name:regExpName,lastname:regExpLastname,deleted_at:null},{name:1,lastname:1,phone_number:1,email:1,role:1})
+  }else{throw new Error('USER NOT FOUND')}
+}
 
 export const userListByID = async (req) => {
   if (req.token.role == "client" && req.params.id == req.token.id) {
